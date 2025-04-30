@@ -1,15 +1,27 @@
 import * as THREE from 'three'
 import { useGLTF, useTexture } from '@react-three/drei'
 import { useMemo, useEffect } from 'react'
+import { getSquareFromPointer, squareToPosition } from '../utils'
 
 type BoardProps = {
   texturePath: string
   position?: [number, number, number]
   scale?: number
-  onHoverChange?: (flag: boolean) => void
+  onSquareClick: (square: string) => void
+  selectedSquare: string | null
+  validMoves: string[]
+  setOrbitEnabled: (enabled: boolean) => void
 }
 
-export function Board({ texturePath, position, scale, onHoverChange }: BoardProps) {
+export function Board({
+  texturePath,
+  position,
+  scale,
+  onSquareClick,
+  selectedSquare,
+  validMoves,
+  setOrbitEnabled,
+}: BoardProps) {
   const { scene: originalScene } = useGLTF('/Models/board.glb')
   const clonedScene = useMemo(() => originalScene.clone(true), [originalScene])
   const texture = useTexture(texturePath)
@@ -32,14 +44,16 @@ export function Board({ texturePath, position, scale, onHoverChange }: BoardProp
       object={clonedScene}
       position={position}
       scale={scale}
-      onPointerOver={(e: { stopPropagation: () => void }) => {
-        e.stopPropagation()
-        onHoverChange?.(false)
+      onPointerMove={(e: any) => {
+        const square = getSquareFromPointer(e.point)
+        setOrbitEnabled(false)
       }}
-      onPointerOut={(e: { stopPropagation: () => void }) => {
-        e.stopPropagation()
-        onHoverChange?.(true)
+      onPointerOut={() => setOrbitEnabled(true)}
+      onClick={(e: any) => {
+        const square = getSquareFromPointer(e.point)
+        if (square) onSquareClick(square)
       }}
-    />
+    >
+    </primitive>
   )
 }

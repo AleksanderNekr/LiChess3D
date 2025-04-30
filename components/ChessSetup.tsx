@@ -1,54 +1,71 @@
+import { useState } from 'react'
+import { Chess, Square } from 'chess.js'
 import { Board } from './canvas/Board'
 import { Piece } from './canvas/Piece'
+import { squareToPosition } from './utils'
 
 export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void }) {
     const { setOrbitEnabled } = props
-    const piecePositions: { type: string; color: string; position: [number, number, number] }[] = [
-        { type: 'pawn', color: 'white', position: [-7, 0, 5] },
-        { type: 'pawn', color: 'white', position: [-5, 0, 5] },
-        { type: 'pawn', color: 'white', position: [-3, 0, 5] },
-        { type: 'pawn', color: 'white', position: [-1, 0, 5] },
-        { type: 'pawn', color: 'white', position: [1, 0, 5] },
-        { type: 'pawn', color: 'white', position: [3, 0, 5] },
-        { type: 'pawn', color: 'white', position: [5, 0, 5] },
-        { type: 'pawn', color: 'white', position: [7, 0, 5] },
-        { type: 'rook', color: 'white', position: [-7, 0, 7] },
-        { type: 'knight', color: 'white', position: [-5, 0, 7] },
-        { type: 'bishop', color: 'white', position: [-3, 0, 7] },
-        { type: 'queen', color: 'white', position: [-1, 0, 7] },
-        { type: 'king', color: 'white', position: [1, 0, 7] },
-        { type: 'bishop', color: 'white', position: [3, 0, 7] },
-        { type: 'knight', color: 'white', position: [5, 0, 7] },
-        { type: 'rook', color: 'white', position: [7, 0, 7] },
+    const [chess] = useState(new Chess()) // Initialize chess.js
+    const [selectedSquare, setSelectedSquare] = useState<string | null>(null)
+    const [validMoves, setValidMoves] = useState<string[]>([])
+    const [turn, setTurn] = useState<'w' | 'b'>('w') // Track whose turn it is
 
-        { type: 'pawn', color: 'black', position: [-7, 0, -5] },
-        { type: 'pawn', color: 'black', position: [-5, 0, -5] },
-        { type: 'pawn', color: 'black', position: [-3, 0, -5] },
-        { type: 'pawn', color: 'black', position: [-1, 0, -5] },
-        { type: 'pawn', color: 'black', position: [1, 0, -5] },
-        { type: 'pawn', color: 'black', position: [3, 0, -5] },
-        { type: 'pawn', color: 'black', position: [5, 0, -5] },
-        { type: 'pawn', color: 'black', position: [7, 0, -5] },
-        { type: 'rook', color: 'black', position: [-7, 0, -7] },
-        { type: 'knight', color: 'black', position: [-5, 0, -7] },
-        { type: 'bishop', color: 'black', position: [-3, 0, -7] },
-        { type: 'queen', color: 'black', position: [-1, 0, -7] },
-        { type: 'king', color: 'black', position: [1, 0, -7] },
-        { type: 'bishop', color: 'black', position: [3, 0, -7] },
-        { type: 'knight', color: 'black', position: [5, 0, -7] },
-        { type: 'rook', color: 'black', position: [7, 0, -7] },
-    ]
+    const handleSquareClick = (square: string) => {
+        if (selectedSquare === square) {
+            // Deselect the piece if the same square is clicked again
+            setSelectedSquare(null)
+            setValidMoves([])
+        } else if (selectedSquare && validMoves.includes(square)) {
+            // Move the piece
+            chess.move({ from: selectedSquare, to: square })
+            setSelectedSquare(null)
+            setValidMoves([])
+            setTurn(turn === 'w' ? 'b' : 'w') // Switch turns
+        } else if (chess.get(square as Square)?.color === turn) {
+            // Select a piece
+            setSelectedSquare(square)
+            const moves = chess.moves({ square: square as Square, verbose: true }).map((move) => move.to)
+            setValidMoves(moves)
+        } else {
+            // Deselect if clicking on an invalid square
+            setSelectedSquare(null)
+            setValidMoves([])
+        }
+    }
+
+    const piecePositions = chess.board().flatMap((row, rowIndex) =>
+        row.map((piece, colIndex) => {
+            if (!piece) return null
+            const square = String.fromCharCode(97 + colIndex) + (8 - rowIndex)
+            return {
+                type: piece.type,
+                color: piece.color === 'w' ? 'white' : 'black',
+                position: squareToPosition(square),
+                square,
+            }
+        })
+    ).filter(Boolean)
 
     return (
         <>
-            <Board texturePath="/Models/board_dark_wood.jpg" scale={0.2} position={[0, 0, 0]} onHoverChange={setOrbitEnabled} />
+            <Board
+                texturePath="/Models/board_dark_wood.jpg"
+                scale={0.2}
+                position={[0, 0, 0]}
+                onSquareClick={handleSquareClick}
+                selectedSquare={selectedSquare}
+                validMoves={validMoves}
+                setOrbitEnabled={setOrbitEnabled}
+            />
             {piecePositions.map((piece, index) => (
                 <Piece
                     key={index}
-                    modelPath={`/Models/${piece.type}.glb`}
-                    texturePath={`/Models/piece_${piece.color}.jpg`}
-                    position={piece.position}
+                    modelPath={`/Models/${piece!.type}.glb`}
+                    texturePath={`/Models/piece_${piece!.color}.jpg`}
+                    position={piece!.position}
                     scale={0.2}
+                    highlighted={piece!.square === selectedSquare}
                 />
             ))}
         </>

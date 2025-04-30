@@ -8,9 +8,10 @@ type PieceProps = {
   position?: [number, number, number]
   rotation?: [number, number, number]
   scale?: number
+  highlighted?: boolean
 }
 
-export function Piece({ modelPath, texturePath, position, rotation, scale }: PieceProps) {
+export function Piece({ modelPath, texturePath, position, rotation, scale, highlighted }: PieceProps) {
   const { scene: originalScene } = useGLTF(modelPath)
   const clonedScene = useMemo(() => originalScene.clone(true), [originalScene])
   const texture = useTexture(texturePath)
@@ -24,11 +25,11 @@ export function Piece({ modelPath, texturePath, position, rotation, scale }: Pie
         child.material.needsUpdate = true
         child.material.metalness = 0.2
         child.material.roughness = 0.2
-        child.material.emissive = new THREE.Color(0x222222)
-        child.material.emissiveIntensity = 0.07
+        child.material.emissive = highlighted ? new THREE.Color(0xffff00) : new THREE.Color(0x222222)
+        child.material.emissiveIntensity = highlighted ? 0.5 : 0.07
       }
     })
-  }, [clonedScene, texture])
+  }, [clonedScene, texture, highlighted])
 
   return <primitive object={clonedScene} position={position} rotation={rotation} scale={scale} />
 }
