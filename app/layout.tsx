@@ -1,5 +1,6 @@
 import { Layout } from '@/components/dom/Layout';
 import { PromotionProvider } from '@/helpers/PromotionContext';
+import { LichessProvider } from '@/helpers/LichessContext';
 import './globals.css';
 
 export const metadata = {
@@ -17,7 +18,9 @@ export default function RootLayout({
       <head />
       <body>
         <PromotionProvider>
-          <Layout>{children}</Layout>
+          <LichessProvider>
+            <Layout>{children}</Layout>
+          </LichessProvider>
         </PromotionProvider>
       </body>
     </html>

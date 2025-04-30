@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { usePromotion } from '@/helpers/PromotionContext';
+import { useLichess } from '@/helpers/LichessContext';
 
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false });
 
@@ -15,9 +16,12 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { promotionFigure, setPromotionFigure } = usePromotion();
+  const { accessToken, userInfo, login, logout, fetchActiveGames } = useLichess();
   const [sidebarWidth, setSidebarWidth] = useState(250); // Initial sidebar width
   const [isDragging, setIsDragging] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true); // Sidebar visibility state
+  const [activeGames, setActiveGames] = useState<any[]>([]);
+  const [loadingGames, setLoadingGames] = useState(false);
 
   const handleMouseDown = () => {
     setIsDragging(true);
@@ -46,6 +50,18 @@ const Layout = ({ children }: LayoutProps) => {
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging]);
+
+  const loadActiveGames = async () => {
+    setLoadingGames(true);
+    try {
+      const games = await fetchActiveGames();
+      setActiveGames(games);
+    } catch (error) {
+      console.error('Failed to fetch active games:', error);
+    } finally {
+      setLoadingGames(false);
+    }
+  };
 
   return (
     <div
@@ -84,12 +100,92 @@ const Layout = ({ children }: LayoutProps) => {
               <option value="knight">Knight</option>
             </select>
           </div>
+          {!accessToken ? (
+            <button
+              onClick={login}
+              style={{
+                marginTop: '10px',
+                padding: '10px',
+                backgroundColor: '#0275d8',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              Login with Lichess
+            </button>
+          ) : (
+            <>
+              {userInfo && (
+                <div style={{ marginBottom: '20px' }}>
+                  <p>
+                    <strong>Username:</strong> {userInfo.username}
+                  </p>
+                  {userInfo.title && (
+                    <p>
+                      <strong>Title:</strong> {userInfo.title}
+                    </p>
+                  )}
+                  <p>
+                    <strong>Status:</strong> {userInfo.online ? 'Online' : 'Offline'}
+                  </p>
+                </div>
+              )}
+              <button
+                onClick={logout}
+                style={{
+                  marginTop: '10px',
+                  padding: '10px',
+                  backgroundColor: '#d9534f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                Logout
+              </button>
+              <button
+                onClick={loadActiveGames}
+                style={{
+                  marginTop: '10px',
+                  padding: '10px',
+                  backgroundColor: '#5cb85c',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                Load Active Games
+              </button>
+              {loadingGames ? (
+                <div className="spinner" style={{ marginTop: '10px' }}></div>
+              ) : (
+                <ul style={{ marginTop: '10px', padding: '0', listStyle: 'none' }}>
+                  {activeGames.map((game) => (
+                    <li key={game.id} style={{ marginBottom: '10px' }}>
+                      <a
+                        href={`https://lichess.org/${game.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#0275d8', textDecoration: 'none' }}
+                      >
+                        {game.id} - {game.opponent.username}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
           <button
             onClick={() => setIsSidebarVisible(false)}
             style={{
-              marginTop: '10px',
+              marginTop: '20px',
               padding: '10px',
-              backgroundColor: '#d9534f',
+              backgroundColor: '#f0ad4e',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
@@ -132,7 +228,7 @@ const Layout = ({ children }: LayoutProps) => {
               top: '10px',
               left: '10px',
               padding: '10px',
-              backgroundColor: 'transparent',
+              backgroundColor: '#0275d8',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
@@ -140,7 +236,7 @@ const Layout = ({ children }: LayoutProps) => {
               zIndex: 12,
             }}
           >
-            =
+            Show Sidebar
           </button>
         )}
         {children}
