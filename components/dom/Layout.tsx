@@ -1,15 +1,20 @@
-'use client'
+'use client';
 
-import { useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
-const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
+import { useRef } from 'react';
+import dynamic from 'next/dynamic';
+import { usePromotion } from '@/helpers/PromotionContext';
 
-import { ReactNode } from 'react'
+const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false });
 
-const Layout = ({ children }: { children: ReactNode }) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const [promotionFigure, setPromotionFigure] = useState('queen')
-  const [lichessGameId, setLichessGameId] = useState('')
+import { ReactNode } from 'react';
+
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const { promotionFigure, setPromotionFigure } = usePromotion();
 
   return (
     <div
@@ -47,19 +52,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
             <option value="knight">Knight</option>
           </select>
         </div>
-        <div>
-          <label htmlFor="lichess-game-id" style={{ display: 'block', marginBottom: '5px' }}>
-            Insert Lichess Game ID:
-          </label>
-          <input
-            id="lichess-game-id"
-            type="text"
-            value={lichessGameId}
-            onChange={(e) => setLichessGameId(e.target.value)}
-            placeholder="Enter game ID"
-            style={{ width: '100%', padding: '5px' }}
-          />
-        </div>
       </div>
 
       {/* Main Content */}
@@ -87,7 +79,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { Layout }
+export { Layout };
