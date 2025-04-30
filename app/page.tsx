@@ -3,13 +3,7 @@
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
 
-const Board = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Board), { ssr: false })
-const Pawn = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Pawn), { ssr: false })
-const King = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.King), { ssr: false })
-const Queen = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Queen), { ssr: false })
-const Rook = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Rook), { ssr: false })
-const Knight = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Knight), { ssr: false })
-const Bishop = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Bishop), { ssr: false })
+const ChessLogic = dynamic(() => import('@/components/ChessSetup').then((mod) => mod.ChessSetup), { ssr: false })
 
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
@@ -35,44 +29,7 @@ export default function Home() {
     <div className="fixed inset-0 m-0 p-0 w-full h-full">
       <View orbit orbitEnabled={orbitEnabled} className="w-full h-full">
         <Suspense fallback={null}>
-          <Board onHoverChange={setOrbitEnabled} scale={0.2} position={[0, 0, 0]} color={"white"} />
-
-          <Pawn scale={0.2} position={[-7, 0, 5]} color="white" />
-          <Pawn scale={0.2} position={[-5, 0, 5]} color="white" />
-          <Pawn scale={0.2} position={[-3, 0, 5]} color="white" />
-          <Pawn scale={0.2} position={[-1, 0, 5]} color="white" />
-          <Pawn scale={0.2} position={[1, 0, 5]} color="white" />
-          <Pawn scale={0.2} position={[3, 0, 5]} color="white" />
-          <Pawn scale={0.2} position={[5, 0, 5]} color="white" />
-          <Pawn scale={0.2} position={[7, 0, 5]} color="white" />
-
-          <Rook scale={0.2} position={[-7, 0, 7]} color="white" />
-          <Knight scale={0.2} position={[-5, 0, 7]} color="white" />
-          <Bishop scale={0.2} position={[-3, 0, 7]} color="white" />
-          <Queen scale={0.2} position={[-1, 0, 7]} color="white" />
-          <King scale={0.2} position={[1, 0, 7]} color="white" />
-          <Bishop scale={0.2} position={[3, 0, 7]} color="white" />
-          <Knight scale={0.2} position={[5, 0, 7]} color="white" />
-          <Rook scale={0.2} position={[7, 0, 7]} color="white" />
-
-          <Pawn scale={0.2} position={[-7, 0, -5]} color="black" />
-          <Pawn scale={0.2} position={[-5, 0, -5]} color="black" />
-          <Pawn scale={0.2} position={[-3, 0, -5]} color="black" />
-          <Pawn scale={0.2} position={[-1, 0, -5]} color="black" />
-          <Pawn scale={0.2} position={[1, 0, -5]} color="black" />
-          <Pawn scale={0.2} position={[3, 0, -5]} color="black" />
-          <Pawn scale={0.2} position={[5, 0, -5]} color="black" />
-          <Pawn scale={0.2} position={[7, 0, -5]} color="black" />
-
-          <Rook scale={0.2} position={[-7, 0, -7]} color='black' />
-          <Knight scale={0.2} position={[-5, 0, -7]} color='black' />
-          <Bishop scale={0.2} position={[-3, 0, -7]} color='black' />
-          <Queen scale={0.2} position={[-1, 0, -7]} color='black' />
-          <King scale={0.2} position={[1, 0, -7]} color='black' />
-          <Bishop scale={0.2} position={[3, 0, -7]} color='black' />
-          <Knight scale={0.2} position={[5, 0, -7]} color='black' />
-          <Rook scale={0.2} position={[7, 0, -7]} color='black' />
-
+          <ChessLogic setOrbitEnabled={setOrbitEnabled} />
           <Common color={'white'} />
         </Suspense>
       </View>
