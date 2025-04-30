@@ -13,13 +13,14 @@ export const Common = ({ color }: CommonProps) => (
   <Suspense fallback={null}>
     {color && <color attach='background' args={[color]} />}
     <ambientLight intensity={0.4} />
-    <directionalLight position={[0, 10, -1]} intensity={5} castShadow />
-    <pointLight position={[20, 30, 10]} intensity={3} decay={0.2} />
-    <pointLight position={[-10, -10, -10]} color='blue' decay={0.2} />
+    <directionalLight position={[0, 10, 0]} intensity={1.8} castShadow />
     <PerspectiveCamera makeDefault fov={40} position={[0, 20, 15]} />
 
+    {/* Horizontal light */}
+    <directionalLight position={[0, 0, 1]} intensity={1} color='white' castShadow />
+
     <EffectComposer>
-      <BrightnessContrast contrast={0.3} />
+      <BrightnessContrast contrast={0.2} />
     </EffectComposer>
   </Suspense>
 )

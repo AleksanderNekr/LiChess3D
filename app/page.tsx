@@ -29,49 +29,49 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 
 export default function Home() {
-const [orbitEnabled, setOrbitEnabled] = useState(true)
+  const [orbitEnabled, setOrbitEnabled] = useState(true)
 
   return (
     <div className="fixed inset-0 m-0 p-0 w-full h-full">
       <View orbit orbitEnabled={orbitEnabled} className="w-full h-full">
         <Suspense fallback={null}>
-        <Board onHoverChange={setOrbitEnabled} scale={0.2} position={[0, 0, 0]} />
+          <Board onHoverChange={setOrbitEnabled} scale={0.2} position={[0, 0, 0]} color={"white"} />
 
-          <Pawn scale={0.2} position={[-7, 0, 5]} />
-          <Pawn scale={0.2} position={[-5, 0, 5]} />
-          <Pawn scale={0.2} position={[-3, 0, 5]} />
-          <Pawn scale={0.2} position={[-1, 0, 5]} />
-          <Pawn scale={0.2} position={[1, 0, 5]} />
-          <Pawn scale={0.2} position={[3, 0, 5]} />
-          <Pawn scale={0.2} position={[5, 0, 5]} />
-          <Pawn scale={0.2} position={[7, 0, 5]} />
+          <Pawn scale={0.2} position={[-7, 0, 5]} color="white" />
+          <Pawn scale={0.2} position={[-5, 0, 5]} color="white" />
+          <Pawn scale={0.2} position={[-3, 0, 5]} color="white" />
+          <Pawn scale={0.2} position={[-1, 0, 5]} color="white" />
+          <Pawn scale={0.2} position={[1, 0, 5]} color="white" />
+          <Pawn scale={0.2} position={[3, 0, 5]} color="white" />
+          <Pawn scale={0.2} position={[5, 0, 5]} color="white" />
+          <Pawn scale={0.2} position={[7, 0, 5]} color="white" />
 
-          <Rook scale={0.2} position={[-7, 0, 7]} />
-          <Knight scale={0.2} position={[-5, 0, 7]} />
-          <Bishop scale={0.2} position={[-3, 0, 7]} />
-          <Queen scale={0.2} position={[-1, 0, 7]} />
-          <King scale={0.2} position={[1, 0, 7]}  />
-          <Bishop scale={0.2} position={[3, 0, 7]}  />
-          <Knight scale={0.2} position={[5, 0, 7]}  />
-          <Rook scale={0.2} position={[7, 0, 7]}  />
+          <Rook scale={0.2} position={[-7, 0, 7]} color="white" />
+          <Knight scale={0.2} position={[-5, 0, 7]} color="white" />
+          <Bishop scale={0.2} position={[-3, 0, 7]} color="white" />
+          <Queen scale={0.2} position={[-1, 0, 7]} color="white" />
+          <King scale={0.2} position={[1, 0, 7]} color="white" />
+          <Bishop scale={0.2} position={[3, 0, 7]} color="white" />
+          <Knight scale={0.2} position={[5, 0, 7]} color="white" />
+          <Rook scale={0.2} position={[7, 0, 7]} color="white" />
 
-          <Pawn scale={0.2} position={[-7, 0, -5]} />
-          <Pawn scale={0.2} position={[-5, 0, -5]} />
-          <Pawn scale={0.2} position={[-3, 0, -5]} />
-          <Pawn scale={0.2} position={[-1, 0, -5]} />
-          <Pawn scale={0.2} position={[1, 0, -5]} />
-          <Pawn scale={0.2} position={[3, 0, -5]} />
-          <Pawn scale={0.2} position={[5, 0, -5]} />
-          <Pawn scale={0.2} position={[7, 0, -5]} />
-          
-          <Rook scale={0.2} position={[-7, 0, -7]} />
-          <Knight scale={0.2} position={[-5, 0, -7]} />
-          <Bishop scale={0.2} position={[-3, 0, -7]} />
-          <Queen scale={0.2} position={[-1, 0, -7]} />
-          <King scale={0.2} position={[1, 0, -7]} />
-          <Bishop scale={0.2} position={[3, 0, -7]} />
-          <Knight scale={0.2} position={[5, 0, -7]} />
-          <Rook scale={0.2} position={[7, 0, -7]} />
+          <Pawn scale={0.2} position={[-7, 0, -5]} color="black" />
+          <Pawn scale={0.2} position={[-5, 0, -5]} color="black" />
+          <Pawn scale={0.2} position={[-3, 0, -5]} color="black" />
+          <Pawn scale={0.2} position={[-1, 0, -5]} color="black" />
+          <Pawn scale={0.2} position={[1, 0, -5]} color="black" />
+          <Pawn scale={0.2} position={[3, 0, -5]} color="black" />
+          <Pawn scale={0.2} position={[5, 0, -5]} color="black" />
+          <Pawn scale={0.2} position={[7, 0, -5]} color="black" />
+
+          <Rook scale={0.2} position={[-7, 0, -7]} color='black' />
+          <Knight scale={0.2} position={[-5, 0, -7]} color='black' />
+          <Bishop scale={0.2} position={[-3, 0, -7]} color='black' />
+          <Queen scale={0.2} position={[-1, 0, -7]} color='black' />
+          <King scale={0.2} position={[1, 0, -7]} color='black' />
+          <Bishop scale={0.2} position={[3, 0, -7]} color='black' />
+          <Knight scale={0.2} position={[5, 0, -7]} color='black' />
+          <Rook scale={0.2} position={[7, 0, -7]} color='black' />
 
           <Common color={'white'} />
         </Suspense>
