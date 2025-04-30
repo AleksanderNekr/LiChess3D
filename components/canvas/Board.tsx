@@ -27,6 +27,10 @@ export function Board({
   const texture = useTexture(texturePath)
   texture.colorSpace = THREE.SRGBColorSpace
 
+  // Rotate the texture by 90 degrees
+  texture.rotation = Math.PI / 2 // 90 degrees in radians
+  texture.center.set(0.5, 0.5) // Set the rotation center to the middle of the texture
+
   useEffect(() => {
     clonedScene.traverse((child: any) => {
       if (child.isMesh) {
