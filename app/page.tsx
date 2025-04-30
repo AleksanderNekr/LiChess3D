@@ -35,43 +35,43 @@ const [orbitEnabled, setOrbitEnabled] = useState(true)
     <div className="fixed inset-0 m-0 p-0 w-full h-full">
       <View orbit orbitEnabled={orbitEnabled} className="w-full h-full">
         <Suspense fallback={null}>
-          <Board onHoverChange={setOrbitEnabled} scale={0.2} position={[1, -1, -6]} />
-          
-          <Pawn scale={0.2} position={[-6, -1, -1]} />
-          <Pawn scale={0.2} position={[-4, -1, -1]} />
-          <Pawn scale={0.2} position={[-2, -1, -1]} />
-          <Pawn scale={0.2} position={[0, -1, -1]} />
-          <Pawn scale={0.2} position={[2, -1, -1]} />
-          <Pawn scale={0.2} position={[4, -1, -1]} />
-          <Pawn scale={0.2} position={[6, -1, -1]} />
-          <Pawn scale={0.2} position={[8, -1, -1]} />
+        <Board onHoverChange={setOrbitEnabled} scale={0.2} position={[0, 0, 0]} />
 
-          <Rook scale={0.2} position={[-6, -1, 1]} />
-          <Knight scale={0.2} position={[-4, -1, 1]} />
-          <Bishop scale={0.2} position={[-2, -1, 1]} />
-          <Queen scale={0.2} position={[0, -1, 1]} />
-          <King scale={0.2} position={[2, -1, 1]} />
-          <Bishop scale={0.2} position={[4, -1, 1]} />
-          <Knight scale={0.2} position={[6, -1, 1]} />
-          <Rook scale={0.2} position={[8, -1, 1]} />
+          <Pawn scale={0.2} position={[-7, 0, 5]} />
+          <Pawn scale={0.2} position={[-5, 0, 5]} />
+          <Pawn scale={0.2} position={[-3, 0, 5]} />
+          <Pawn scale={0.2} position={[-1, 0, 5]} />
+          <Pawn scale={0.2} position={[1, 0, 5]} />
+          <Pawn scale={0.2} position={[3, 0, 5]} />
+          <Pawn scale={0.2} position={[5, 0, 5]} />
+          <Pawn scale={0.2} position={[7, 0, 5]} />
 
-          <Pawn scale={0.2} position={[-6, -1, -11]} />
-          <Pawn scale={0.2} position={[-4, -1, -11]} />
-          <Pawn scale={0.2} position={[-2, -1, -11]} />
-          <Pawn scale={0.2} position={[0, -1, -11]} />
-          <Pawn scale={0.2} position={[2, -1, -11]} />
-          <Pawn scale={0.2} position={[4, -1, -11]} />
-          <Pawn scale={0.2} position={[6, -1, -11]} />
-          <Pawn scale={0.2} position={[8, -1, -11]} />
+          <Rook scale={0.2} position={[-7, 0, 7]} />
+          <Knight scale={0.2} position={[-5, 0, 7]} />
+          <Bishop scale={0.2} position={[-3, 0, 7]} />
+          <Queen scale={0.2} position={[-1, 0, 7]} />
+          <King scale={0.2} position={[1, 0, 7]}  />
+          <Bishop scale={0.2} position={[3, 0, 7]}  />
+          <Knight scale={0.2} position={[5, 0, 7]}  />
+          <Rook scale={0.2} position={[7, 0, 7]}  />
+
+          <Pawn scale={0.2} position={[-7, 0, -5]} />
+          <Pawn scale={0.2} position={[-5, 0, -5]} />
+          <Pawn scale={0.2} position={[-3, 0, -5]} />
+          <Pawn scale={0.2} position={[-1, 0, -5]} />
+          <Pawn scale={0.2} position={[1, 0, -5]} />
+          <Pawn scale={0.2} position={[3, 0, -5]} />
+          <Pawn scale={0.2} position={[5, 0, -5]} />
+          <Pawn scale={0.2} position={[7, 0, -5]} />
           
-          <Rook scale={0.2} position={[-6, -1, -13]} />
-          <Knight scale={0.2} position={[-4, -1, -13]} />
-          <Bishop scale={0.2} position={[-2, -1, -13]} />
-          <Queen scale={0.2} position={[0, -1, -13]} />
-          <King scale={0.2} position={[2, -1, -13]} />
-          <Bishop scale={0.2} position={[4, -1, -13]} />
-          <Knight scale={0.2} position={[6, -1, -13]} />
-          <Rook scale={0.2} position={[8, -1, -13]} />
+          <Rook scale={0.2} position={[-7, 0, -7]} />
+          <Knight scale={0.2} position={[-5, 0, -7]} />
+          <Bishop scale={0.2} position={[-3, 0, -7]} />
+          <Queen scale={0.2} position={[-1, 0, -7]} />
+          <King scale={0.2} position={[1, 0, -7]} />
+          <Bishop scale={0.2} position={[3, 0, -7]} />
+          <Knight scale={0.2} position={[5, 0, -7]} />
+          <Rook scale={0.2} position={[7, 0, -7]} />
 
           <Common color={'white'} />
         </Suspense>
