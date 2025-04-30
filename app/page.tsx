@@ -3,7 +3,14 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-const Pawn = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Pawn), { ssr: false })
+const Board = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Board), { ssr: false })
+const Pawn = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Pawn), { ssr: false })
+const King = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.King), { ssr: false })
+const Queen = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Queen), { ssr: false })
+const Rook = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Rook), { ssr: false })
+const Knight = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Knight), { ssr: false })
+const Bishop = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Bishop), { ssr: false })
+
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
   loading: () => (
@@ -22,23 +29,51 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 
 export default function Home() {
-  return <>
-    <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
-      {/* jumbo */}
-      <div className='flex w-full flex-col items-start justify-center p-12 text-center md:w-2/5 md:text-left'>
-        <p className='w-full uppercase'>Next + React Three Fiber</p>
-        <h1 className='my-4 text-5xl font-bold leading-tight'>Next 3D Starter</h1>
-        <p className='mb-8 text-2xl leading-normal'>A minimalist starter for React, React-three-fiber and Threejs.</p>
-      </div>
+  return (
+    <div className="fixed inset-0 m-0 p-0 w-full h-full">
+      <View orbit className="w-full h-full">
+        <Suspense fallback={null}>
+          <Board scale={0.2} position={[1, -1, -6]} />
+          
+          <Pawn scale={0.2} position={[-6, -1, -1]} />
+          <Pawn scale={0.2} position={[-4, -1, -1]} />
+          <Pawn scale={0.2} position={[-2, -1, -1]} />
+          <Pawn scale={0.2} position={[0, -1, -1]} />
+          <Pawn scale={0.2} position={[2, -1, -1]} />
+          <Pawn scale={0.2} position={[4, -1, -1]} />
+          <Pawn scale={0.2} position={[6, -1, -1]} />
+          <Pawn scale={0.2} position={[8, -1, -1]} />
 
-      <div className='relative my-12 h-48 w-full py-6 sm:w-1/2 md:mb-40'>
-        <View orbit className='relative h-full  sm:h-48 sm:w-full'>
-          <Suspense fallback={null}>
-            <Pawn scale={0.5} position={[0, -1.6, 0]} rotation={[0.0, -0.3, 0]} />
-            <Common color={'lightpink'} />
-          </Suspense>
-        </View>
-      </div>
+          <Rook scale={0.2} position={[-6, -1, 1]} />
+          <Knight scale={0.2} position={[-4, -1, 1]} />
+          <Bishop scale={0.2} position={[-2, -1, 1]} />
+          <Queen scale={0.2} position={[0, -1, 1]} />
+          <King scale={0.2} position={[2, -1, 1]} />
+          <Bishop scale={0.2} position={[4, -1, 1]} />
+          <Knight scale={0.2} position={[6, -1, 1]} />
+          <Rook scale={0.2} position={[8, -1, 1]} />
+
+          <Pawn scale={0.2} position={[-6, -1, -11]} />
+          <Pawn scale={0.2} position={[-4, -1, -11]} />
+          <Pawn scale={0.2} position={[-2, -1, -11]} />
+          <Pawn scale={0.2} position={[0, -1, -11]} />
+          <Pawn scale={0.2} position={[2, -1, -11]} />
+          <Pawn scale={0.2} position={[4, -1, -11]} />
+          <Pawn scale={0.2} position={[6, -1, -11]} />
+          <Pawn scale={0.2} position={[8, -1, -11]} />
+          
+          <Rook scale={0.2} position={[-6, -1, -13]} />
+          <Knight scale={0.2} position={[-4, -1, -13]} />
+          <Bishop scale={0.2} position={[-2, -1, -13]} />
+          <Queen scale={0.2} position={[0, -1, -13]} />
+          <King scale={0.2} position={[2, -1, -13]} />
+          <Bishop scale={0.2} position={[4, -1, -13]} />
+          <Knight scale={0.2} position={[6, -1, -13]} />
+          <Rook scale={0.2} position={[8, -1, -13]} />
+
+          <Common color={'white'} />
+        </Suspense>
+      </View>
     </div>
-  </>;
+  );
 }

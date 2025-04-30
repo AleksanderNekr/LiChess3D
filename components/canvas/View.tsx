@@ -1,6 +1,7 @@
 'use client'
 
-import { forwardRef, Suspense, useImperativeHandle, useRef } from 'react'
+import { EffectComposer, BrightnessContrast } from '@react-three/postprocessing'
+import { Suspense, forwardRef, useImperativeHandle, useRef } from 'react'
 import { OrbitControls, PerspectiveCamera, View as ViewImpl } from '@react-three/drei'
 import { Three } from '@/helpers/components/Three'
 
@@ -11,10 +12,15 @@ interface CommonProps {
 export const Common = ({ color }: CommonProps) => (
   <Suspense fallback={null}>
     {color && <color attach='background' args={[color]} />}
-    <ambientLight />
+    <ambientLight intensity={0.4} />
+    <directionalLight position={[0, 10, -1]} intensity={5} castShadow />
     <pointLight position={[20, 30, 10]} intensity={3} decay={0.2} />
     <pointLight position={[-10, -10, -10]} color='blue' decay={0.2} />
     <PerspectiveCamera makeDefault fov={40} position={[0, 0, 6]} />
+
+    <EffectComposer>
+      <BrightnessContrast contrast={0.3} />
+    </EffectComposer>
   </Suspense>
 )
 

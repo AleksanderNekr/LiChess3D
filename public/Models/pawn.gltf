@@ -1,0 +1,106 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v1.8.19",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "pawn",
+      "rotation": [
+        0.7071068286895752,
+        0,
+        0,
+        0.7071067094802856
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "pawn",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3
+        }
+      ]
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 587,
+      "max": [
+        3.0423030853271484,
+        3.0423030853271484,
+        0
+      ],
+      "min": [
+        -3.042304039001465,
+        -3.042304039001465,
+        -10.0358247756958
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 587,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 587,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 2514,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 7044,
+      "byteOffset": 0
+    },
+    {
+      "buffer": 0,
+      "byteLength": 7044,
+      "byteOffset": 7044
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4696,
+      "byteOffset": 14088
+    },
+    {
+      "buffer": 0,
+      "byteLength": 5028,
+      "byteOffset": 18784
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "pawn_data.bin",
+      "byteLength": 23812
+    }
+  ]
+}
