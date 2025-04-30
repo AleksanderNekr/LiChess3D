@@ -1,7 +1,7 @@
 'use client'
 
 import { EffectComposer, BrightnessContrast } from '@react-three/postprocessing'
-import { Suspense, forwardRef, useImperativeHandle, useRef } from 'react'
+import { Suspense, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { OrbitControls, PerspectiveCamera, View as ViewImpl } from '@react-three/drei'
 import { Three } from '@/helpers/components/Three'
 
@@ -27,11 +27,11 @@ export const Common = ({ color }: CommonProps) => (
 interface ViewProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   orbit?: boolean;
+  orbitEnabled?: boolean;
 }
 
-const View = forwardRef<HTMLDivElement, ViewProps>(({ children, orbit, ...props }, ref) => {
+const View = forwardRef<HTMLDivElement, ViewProps>(({ children, orbit, orbitEnabled, ...props }, ref) => {
   const localRef = useRef<HTMLDivElement | null>(null)
-  useImperativeHandle(ref, () => localRef.current as HTMLDivElement)
 
   return (
     <>
@@ -39,7 +39,7 @@ const View = forwardRef<HTMLDivElement, ViewProps>(({ children, orbit, ...props 
       <Three>
         <ViewImpl track={localRef as React.RefObject<HTMLElement>}>
           {children}
-          {orbit && <OrbitControls />}
+          {orbit && <OrbitControls enabled={orbitEnabled} />}
         </ViewImpl>
       </Three>
     </>

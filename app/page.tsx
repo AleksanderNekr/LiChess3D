@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 const Board = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Board), { ssr: false })
 const Pawn = dynamic(() => import('@/components/canvas/Chess').then((mod) => mod.Pawn), { ssr: false })
@@ -29,11 +29,13 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 
 export default function Home() {
+const [orbitEnabled, setOrbitEnabled] = useState(true)
+
   return (
     <div className="fixed inset-0 m-0 p-0 w-full h-full">
-      <View orbit className="w-full h-full">
+      <View orbit orbitEnabled={orbitEnabled} className="w-full h-full">
         <Suspense fallback={null}>
-          <Board scale={0.2} position={[1, -1, -6]} />
+          <Board onHoverChange={setOrbitEnabled} scale={0.2} position={[1, -1, -6]} />
           
           <Pawn scale={0.2} position={[-6, -1, -1]} />
           <Pawn scale={0.2} position={[-4, -1, -1]} />
