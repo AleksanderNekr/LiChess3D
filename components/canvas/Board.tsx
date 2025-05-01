@@ -62,10 +62,34 @@ export function Board({
 
       {/* Valid Move Highlights */}
       {validMovePositions.map((position, index) => (
-        <mesh key={index} position={position} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[0.2, 32]} /> {/* Smaller circle for valid moves */}
-          <meshBasicMaterial color="chartreuse" transparent opacity={0.8} />
-        </mesh>
+        <group key={index} position={position} rotation={[-Math.PI / 2, 0, 0]}>
+          {/* Invisible plane for hover detection */}
+          <mesh
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              // Highlight the square on hover
+              if (e.object instanceof THREE.Mesh && e.object.material instanceof THREE.MeshBasicMaterial) {
+                e.object.material.opacity = 0.15; // Make the square semi-transparent
+              }
+            }}
+            onPointerOut={(e) => {
+              e.stopPropagation();
+              // Restore the square to its default state
+              if (e.object instanceof THREE.Mesh && e.object.material instanceof THREE.MeshBasicMaterial) {
+                e.object.material.opacity = 0; // Make the square invisible again
+              }
+            }}
+          >
+            <planeGeometry args={[2.1, 2.1]} />
+            <meshBasicMaterial transparent opacity={0} color="chartreuse" />
+          </mesh>
+
+          {/* Visible circle for valid moves */}
+          <mesh>
+            <circleGeometry args={[0.2, 32]} />
+            <meshBasicMaterial color="chartreuse" transparent opacity={0.5} />
+          </mesh>
+        </group>
       ))}
 
       {/* Board */}
