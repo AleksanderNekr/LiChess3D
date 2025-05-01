@@ -24,9 +24,9 @@ export function Piece({ modelPath, texturePath, position, rotation, scale, highl
         child.material.map = texture
         child.material.needsUpdate = true
         child.material.metalness = 0.2
-        child.material.roughness = 0.2
+        child.material.roughness = 0.3
         child.material.emissive = new THREE.Color(0x222222)
-        child.material.emissiveIntensity = highlighted ? -0.1 : 0
+        child.material.emissiveIntensity = highlighted ? -0.1 : 0.8
         child.castShadow = true
       }
     })
