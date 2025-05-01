@@ -43,21 +43,34 @@ export function Board({
     })
   }, [clonedScene, texture])
 
+  // Calculate the position of the highlighted square
+  const highlightPosition = selectedSquare ? squareToPosition(selectedSquare) : null;
+
   return (
-    <primitive
-      object={clonedScene}
-      position={position}
-      scale={scale}
-      onPointerMove={(e: any) => {
-        const square = getSquareFromPointer(e.point)
-        setOrbitEnabled(false)
-      }}
-      onPointerOut={() => setOrbitEnabled(true)}
-      onClick={(e: any) => {
-        const square = getSquareFromPointer(e.point)
-        if (square) onSquareClick(square)
-      }}
-    >
-    </primitive>
+    <>
+      {/* Highlighted Square */}
+      {highlightPosition && (
+        <mesh position={highlightPosition} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[2.1, 2.1]} />
+          <meshBasicMaterial color="chartreuse" transparent opacity={0.15} />
+        </mesh>
+      )}
+
+      {/* Board */}
+      <primitive
+        object={clonedScene}
+        position={position}
+        scale={scale}
+        onPointerMove={(e: any) => {
+          setOrbitEnabled(false)
+        }}
+        onPointerOut={() => setOrbitEnabled(true)}
+        onClick={(e: any) => {
+          const square = getSquareFromPointer(e.point)
+          if (square) onSquareClick(square)
+        }}
+      >
+      </primitive>
+    </>
   )
 }
