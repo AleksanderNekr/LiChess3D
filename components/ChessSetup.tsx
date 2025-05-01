@@ -13,7 +13,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
 
-  const handleSquareClick = (square: string) => {
+  const handleSquareRelease = (square: string) => {
     if (selectedSquare === square) {
       // Deselect the piece if the same square is clicked again
       setSelectedSquare(null);
@@ -61,7 +61,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
         texturePath="/Models/board_dark_wood.jpg"
         scale={0.2}
         position={[0, 0, 0]}
-        onSquareClick={handleSquareClick}
+        onSquareRelease={handleSquareRelease} // Updated to use release
         selectedSquare={selectedSquare}
         validMoves={validMoves}
         setOrbitEnabled={setOrbitEnabled}
