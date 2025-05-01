@@ -49,6 +49,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
           position: squareToPosition(square),
           square,
           capturable: validMoves.includes(square) && piece.color !== turn, // Mark as capturable if it's in validMoves and not the same color as the current turn
+          inCheck: piece.type === 'k' && chess.inCheck() && piece.color === turn, // Highlight the king if it's in check
         };
       })
     )
@@ -74,6 +75,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
           scale={0.2}
           highlighted={piece!.square === selectedSquare}
           capturable={piece!.capturable} // Pass capturable status
+          inCheck={piece!.inCheck} // Pass inCheck status
           rotation={piece?.type === 'n' ? [0, Math.PI / 2, 0] : [0, 0, 0]}
         />
       ))}
