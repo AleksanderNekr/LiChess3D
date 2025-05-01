@@ -87,7 +87,7 @@ export function Board({
           {/* Visible circle for valid moves */}
           <mesh>
             <circleGeometry args={[0.2, 32]} />
-            <meshBasicMaterial color="chartreuse" transparent opacity={0.5} />
+            <meshBasicMaterial color="#4E6100" />
           </mesh>
         </group>
       ))}
