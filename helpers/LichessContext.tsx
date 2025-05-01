@@ -16,6 +16,7 @@ interface LichessContextType {
   accessToken: string | null;
   userInfo: UserInfo | null;
   setAccessToken: (token: string) => void;
+  fetchUserInfo: (token: string) => Promise<void>;
   login: () => void;
   logout: () => void;
   fetchActiveGames: () => Promise<any[]>;
@@ -102,6 +103,7 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
         accessToken,
         userInfo,
         setAccessToken,
+        fetchUserInfo,
         login,
         logout,
         fetchActiveGames,

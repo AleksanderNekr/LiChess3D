@@ -6,7 +6,7 @@ import { useLichess } from '@/helpers/LichessContext';
 
 export default function Callback() {
   const router = useRouter();
-  const { setAccessToken } = useLichess();
+  const { setAccessToken, fetchUserInfo } = useLichess();
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -44,6 +44,10 @@ export default function Callback() {
         const data = await response.json();
         setAccessToken(data.access_token); // Update the context with the access token
         localStorage.setItem('lichess_access_token', data.access_token); // Optionally store it in localStorage
+
+        // Fetch and store user info
+        await fetchUserInfo(data.access_token);
+
         router.push('/'); // Redirect to the home page
       } catch (error) {
         console.error('Error during token exchange:', error);
@@ -51,7 +55,7 @@ export default function Callback() {
     };
 
     handleCallback();
-  }, [router, setAccessToken]);
+  }, [router, setAccessToken, fetchUserInfo]);
 
   return <div>Processing Lichess login...</div>;
 }
