@@ -101,9 +101,13 @@ export function Board({
           setOrbitEnabled(false);
         }}
         onPointerOut={() => setOrbitEnabled(true)}
+        onPointerDown={(e: any) => {
+          const square = getSquareFromPointer(e.point);
+          if (square) onSquareRelease(square);
+        }}
         onPointerUp={(e: any) => {
           const square = getSquareFromPointer(e.point);
-          if (square) onSquareRelease(square); // Trigger on release
+          if (square) onSquareRelease(square);
         }}
       />
     </>

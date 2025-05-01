@@ -14,11 +14,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
 
   const handleSquareRelease = (square: string) => {
-    if (selectedSquare === square) {
-      // Deselect the piece if the same square is clicked again
-      setSelectedSquare(null);
-      setValidMoves([]);
-    } else if (selectedSquare && validMoves.includes(square)) {
+    if (selectedSquare && validMoves.includes(square)) {
       // Move the piece
       const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
       if (move) {
