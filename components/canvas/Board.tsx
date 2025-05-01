@@ -39,6 +39,7 @@ export function Board({
         child.material.needsUpdate = true
         child.material.metalness = 0
         child.material.roughness = 1
+        child.receiveShadow = true
       }
     })
   }, [clonedScene, texture])
