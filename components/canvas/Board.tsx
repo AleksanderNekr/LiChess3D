@@ -97,7 +97,7 @@ export function Board({
         object={clonedScene}
         position={position}
         scale={scale}
-        onPointerMove={(e: any) => {
+        onPointerMove={() => {
           setOrbitEnabled(false);
         }}
         onPointerOut={() => setOrbitEnabled(true)}

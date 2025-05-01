@@ -23,7 +23,7 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false });
 
-export default function Home({ promotionFigure }: { promotionFigure: string }) {
+export default function Home() {
   const [orbitEnabled, setOrbitEnabled] = useState(true);
 
   return (

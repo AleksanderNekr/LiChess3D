@@ -42,7 +42,7 @@ interface ViewProps extends React.HTMLAttributes<HTMLDivElement> {
   orbitEnabled?: boolean;
 }
 
-const View = forwardRef<HTMLDivElement, ViewProps>(({ children, orbit, orbitEnabled, ...props }, ref) => {
+const View = forwardRef<HTMLDivElement, ViewProps>(({ children, orbit, orbitEnabled, ...props }) => {
   const localRef = useRef<HTMLDivElement | null>(null);
 
   return (

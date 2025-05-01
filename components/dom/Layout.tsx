@@ -7,8 +7,6 @@ import { useLichess } from '@/helpers/LichessContext';
 
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false });
 
-import { ReactNode } from 'react';
-
 interface LayoutProps {
   children: React.ReactNode;
 }
