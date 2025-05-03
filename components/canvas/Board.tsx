@@ -7,7 +7,8 @@ type BoardProps = {
   texturePath: string;
   position?: [number, number, number];
   scale?: number;
-  onSquareRelease: (square: string) => void; // Updated to handle release
+  onSquareDown: (square: string) => void;
+  onSquareRelease: (square: string) => void;
   selectedSquare: string | null;
   validMoves: string[];
   setOrbitEnabled: (enabled: boolean) => void;
@@ -18,6 +19,7 @@ export function Board({
   texturePath,
   position,
   scale,
+  onSquareDown,
   onSquareRelease,
   selectedSquare,
   validMoves,
@@ -104,7 +106,7 @@ export function Board({
         onPointerOut={() => setOrbitEnabled(true)}
         onPointerDown={(e: any) => {
           const square = getSquareFromPointer(e.point);
-          if (square) onSquareRelease(square);
+          if (square) onSquareDown(square);
         }}
         onPointerUp={(e: any) => {
           const square = getSquareFromPointer(e.point);

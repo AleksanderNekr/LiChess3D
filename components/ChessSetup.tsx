@@ -14,8 +14,13 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
   const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null); // Track dragging position
 
-  const handleSquareRelease = (square: string) => {
-    if (selectedSquare && validMoves.includes(square)) {
+  const handleSquareDown = (square: string) => {
+    if (selectedSquare === square) {
+      // Deselect if clicking on the same square
+      setSelectedSquare(null);
+      setValidMoves([]);
+      setDraggingPiecePosition(null);
+    } else if (selectedSquare && validMoves.includes(square)) {
       // Move the piece
       const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
       if (move) {
@@ -33,9 +38,27 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
       // Deselect if clicking on an invalid square
       setSelectedSquare(null);
       setValidMoves([]);
-      setDraggingPiecePosition(null); // Stop dragging
+      setDraggingPiecePosition(null);
     }
   };
+
+  const handleSquareRelease = (square: string) => {
+    if (selectedSquare && validMoves.includes(square)) {
+      // Move the piece
+      const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
+      if (move) {
+        setSelectedSquare(null);
+        setValidMoves([]);
+        setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
+        setDraggingPiecePosition(null); // Stop dragging
+      }
+    } else if (selectedSquare !== square) {
+      // Deselect if clicking on an invalid square
+      setSelectedSquare(null);
+      setValidMoves([]);
+      setDraggingPiecePosition(null);
+    }
+  }
 
   const handlePointerMove = (event: any) => {
     if (selectedSquare) {
@@ -67,11 +90,12 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
         texturePath="/Models/board_dark_wood.jpg"
         scale={0.2}
         position={[0, 0, 0]}
-        onSquareRelease={handleSquareRelease} // Updated to use release
+        onSquareDown={handleSquareDown}
+        onSquareRelease={handleSquareRelease}
         selectedSquare={selectedSquare}
         validMoves={validMoves}
         setOrbitEnabled={setOrbitEnabled}
-        onPointerMove={handlePointerMove} // Track pointer movement
+        onPointerMove={handlePointerMove}
       />
       {piecePositions.map((piece, index) => (
         <Piece
