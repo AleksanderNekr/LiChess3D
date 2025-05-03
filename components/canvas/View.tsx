@@ -28,7 +28,7 @@ export const Common = ({ color }: CommonProps) => (
     <PerspectiveCamera makeDefault fov={40} position={[0, 20, 15]} />
 
     {/* Horizontal light */}
-    <directionalLight position={[0, 10, 20]} intensity={0.1} color='white' castShadow />
+    <directionalLight position={[0, 10, 20]} intensity={0.1} color="white" castShadow />
 
     <EffectComposer>
       <BrightnessContrast contrast={0.2} />
@@ -42,14 +42,14 @@ interface ViewProps extends React.HTMLAttributes<HTMLDivElement> {
   orbitEnabled?: boolean;
 }
 
-const View = forwardRef<HTMLDivElement, ViewProps>(({ children, orbit, orbitEnabled, ...props }) => {
-  const localRef = useRef<HTMLDivElement | null>(null);
+const View = forwardRef<HTMLDivElement, ViewProps>(({ children, orbit, orbitEnabled, ...props }, ref) => {
+  const localRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
-      <div ref={localRef} {...props} />
+      <div ref={ref || localRef} {...props} />
       <Three>
-        <ViewImpl track={localRef as React.RefObject<HTMLElement>}>
+        <ViewImpl track={(ref || localRef) as React.RefObject<HTMLElement>}>
           {children}
           {orbit && <OrbitControls enabled={orbitEnabled} />}
         </ViewImpl>

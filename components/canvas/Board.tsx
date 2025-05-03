@@ -11,6 +11,7 @@ type BoardProps = {
   selectedSquare: string | null;
   validMoves: string[];
   setOrbitEnabled: (enabled: boolean) => void;
+  onPointerMove?: (event: THREE.Event) => void;
 };
 
 export function Board({
@@ -21,6 +22,7 @@ export function Board({
   selectedSquare,
   validMoves,
   setOrbitEnabled,
+  onPointerMove,
 }: BoardProps) {
   const { scene: originalScene } = useGLTF('/Models/board.glb');
   const clonedScene = useMemo(() => originalScene.clone(true), [originalScene]);
@@ -97,8 +99,9 @@ export function Board({
         object={clonedScene}
         position={position}
         scale={scale}
-        onPointerMove={() => {
+        onPointerMove={(e: any) => {
           setOrbitEnabled(false);
+          onPointerMove && onPointerMove(e); // Call the passed pointer move handler
         }}
         onPointerOut={() => setOrbitEnabled(true)}
         onPointerDown={(e: any) => {

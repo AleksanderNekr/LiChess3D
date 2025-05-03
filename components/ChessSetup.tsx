@@ -12,6 +12,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
+  const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null); // Track dragging position
 
   const handleSquareRelease = (square: string) => {
     if (selectedSquare && validMoves.includes(square)) {
@@ -21,6 +22,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
         setSelectedSquare(null);
         setValidMoves([]);
         setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
+        setDraggingPiecePosition(null); // Stop dragging
       }
     } else if (chess.get(square as Square)?.color === turn) {
       // Select a piece
@@ -31,6 +33,14 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
       // Deselect if clicking on an invalid square
       setSelectedSquare(null);
       setValidMoves([]);
+      setDraggingPiecePosition(null); // Stop dragging
+    }
+  };
+
+  const handlePointerMove = (event: any) => {
+    if (selectedSquare) {
+      const point = event.point; // Get the cursor's 3D position
+      setDraggingPiecePosition([point.x, point.y + 0.5, point.z]); // Adjust height slightly above the board
     }
   };
 
@@ -61,13 +71,18 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
         selectedSquare={selectedSquare}
         validMoves={validMoves}
         setOrbitEnabled={setOrbitEnabled}
+        onPointerMove={handlePointerMove} // Track pointer movement
       />
       {piecePositions.map((piece, index) => (
         <Piece
           key={index}
           modelPath={`/Models/${piece!.type}.glb`}
           texturePath={`/Models/piece_${piece!.color}.jpg`}
-          position={piece!.position}
+          position={
+            piece!.square === selectedSquare && draggingPiecePosition
+              ? draggingPiecePosition // Use dragging position if dragging
+              : piece!.position
+          }
           scale={0.2}
           highlighted={piece!.square === selectedSquare}
           capturable={piece!.capturable} // Pass capturable status
