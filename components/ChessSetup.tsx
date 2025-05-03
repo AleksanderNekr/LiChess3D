@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Chess, Square } from 'chess.js';
 import { Board } from './canvas/Board';
 import { Piece } from './canvas/Piece';
@@ -13,6 +13,10 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
   const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null); // Track dragging position
+
+  useEffect(() => {
+    setDraggingPiecePosition(null);
+  }, [turn]);
 
   const handleSquareDown = (square: string) => {
     if (selectedSquare === square) {
