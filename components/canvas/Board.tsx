@@ -68,14 +68,12 @@ export function Board({
           {/* Invisible plane for hover detection */}
           <mesh
             onPointerOver={(e) => {
-              e.stopPropagation();
               // Highlight the square on hover
               if (e.object instanceof THREE.Mesh && e.object.material instanceof THREE.MeshBasicMaterial) {
                 e.object.material.opacity = 0.15; // Make the square semi-transparent
               }
             }}
             onPointerOut={(e) => {
-              e.stopPropagation();
               // Restore the square to its default state
               if (e.object instanceof THREE.Mesh && e.object.material instanceof THREE.MeshBasicMaterial) {
                 e.object.material.opacity = 0; // Make the square invisible again
