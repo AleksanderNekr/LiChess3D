@@ -52,22 +52,32 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
   const [activeLichessGame, setActiveLichessGameState] = useState<LichessGame | null>(null); // Renamed setter
   const [playerColorForLichessGame, setPlayerColorForLichessGameState] = useState<'white' | 'black' | null>(null); // Renamed setter
 
-  // Initialize accessToken and userInfo from localStorage
+  // Initialize accessToken and userInfo from cookie (via API route)
   useEffect(() => {
-    const token = localStorage.getItem('lichess_access_token');
-    const storedUserInfo = localStorage.getItem('lichess_user_info');
-    if (token) {
-      setContextAccessToken(token);
+    async function loadTokenAndUser() {
+      // Fetch token from secure cookie via API route
+      const res = await fetch('/api/get-lichess-token');
+      const { accessToken } = await res.json();
+      if (accessToken) {
+        setContextAccessToken(accessToken);
+        try {
+          const user = await lichessApi.fetchUserInfo(accessToken);
+          setUserInfoState(user);
+        } catch (e) {
+          setUserInfoState(null);
+        }
+      } else {
+        setContextAccessToken(null);
+        setUserInfoState(null);
+      }
     }
-    if (storedUserInfo) {
-      setUserInfoState(JSON.parse(storedUserInfo));
-    }
+    loadTokenAndUser();
     // Potentially load active game from localStorage if desired for persistence
   }, []);
 
   const setAccessToken = (token: string) => {
     setContextAccessToken(token);
-    localStorage.setItem('lichess_access_token', token);
+    // No longer store in localStorage, cookie is used
   };
 
   const login = async () => {
@@ -80,10 +90,13 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
     setUserInfoState(null);
     setActiveLichessGameState(null); // Clear active game on logout
     setPlayerColorForLichessGameState(null); // Clear player color on logout
-    localStorage.removeItem('lichess_access_token');
-    localStorage.removeItem('lichess_user_info');
-    localStorage.removeItem('lichess_code_verifier');
-    // Potentially remove active game from localStorage
+    // Remove cookie by setting it to empty and expired
+    fetch('/api/set-lichess-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: '' }),
+    });
+    // No longer use localStorage
   };
 
   const fetchActiveGamesInternal = async () => { // Renamed
@@ -94,7 +107,7 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserInfoInternal = async (token: string) => { // Renamed
     const data = await lichessApi.fetchUserInfo(token);
     setUserInfoState(data);
-    localStorage.setItem('lichess_user_info', JSON.stringify(data));
+    // No longer use localStorage
   };
 
   const startBotGameInternal = async (options: { // Renamed

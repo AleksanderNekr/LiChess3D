@@ -38,8 +38,14 @@ export default function Callback() {
           codeVerifier,
         });
 
-        setAccessToken(data.access_token);
-        localStorage.setItem('lichess_access_token', data.access_token);
+        // Store token in secure cookie via API route
+        await fetch('/api/set-lichess-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: data.access_token }),
+        });
+
+        setAccessToken(data.access_token); // Still set in context for now
         localStorage.removeItem('lichess_code_verifier'); // Clean up code verifier
 
         await fetchUserInfo(data.access_token);
