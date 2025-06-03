@@ -6,6 +6,7 @@ import { LICHESS_CLIENT_ID, getLichessRedirectUri, scope } from './lichessConfig
 import { GameState, GameFullEvent, UserInfo } from './types';
 import { LichessGame } from './LichessGame';
 import { Stream } from './ndJsonStream';
+import { Chess } from 'chess.js';
 
 
 interface LichessContextType {
@@ -17,7 +18,9 @@ interface LichessContextType {
   logout: () => void;
   fetchActiveGames: () => Promise<any[]>;
   makeLichessMove: (gameId: string, move: string) => Promise<void>;
-  streamGameState: (gameId: string) => Promise<LichessGame>;
+  streamGameState: (gameId: string, callback: (chessPosition: Chess) => void) => Promise<LichessGame>;
+  streamStarted: string | null;
+  setStreamStarted: (gameId: string) => void;
 }
 
 const LichessContext = createContext<LichessContextType | undefined>(undefined);
@@ -25,6 +28,7 @@ const LichessContext = createContext<LichessContextType | undefined>(undefined);
 export const LichessProvider = ({ children }: { children: ReactNode }) => {
   const [accessToken, setContextAccessToken] = useState<string | null>(null);
   const [userInfo, setUserInfoState] = useState<UserInfo | null>(null);
+  const [streamStarted, setStreamStarted] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadTokenAndUser() {
@@ -86,7 +90,7 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const streamGameState = (gameId: string) => {
+  const streamGameState = (gameId: string, callback: (chessPosition: Chess) => void) => {
     if (!accessToken || !userInfo?.id) throw new Error('User is not authenticated');
 
     return new Promise<LichessGame>(async resolve => {
@@ -98,7 +102,7 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
         if (game) {
           game.handleStateChange(msg);
         } else {
-          game = new LichessGame(msg as GameFullEvent, stream, userInfo.id);
+          game = new LichessGame(msg as GameFullEvent, stream, userInfo.id, callback);
           resolve(game);
         }
       };
@@ -120,6 +124,8 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
         fetchActiveGames: fetchActiveGamesInternal,
         makeLichessMove: makeLichessMove,
         streamGameState: streamGameState,
+        streamStarted: streamStarted,
+        setStreamStarted: setStreamStarted,
       }}
     >
       {children}

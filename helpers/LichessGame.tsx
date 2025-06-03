@@ -11,7 +11,7 @@ export class LichessGame {
     chessPosition!: Chess; // The chess position object initialized from the game's initial FEN
     lastUpdateAt!: number; // Timestamp of the last update is initialized in the constructor
 
-    constructor(game: GameFullEvent, readonly stateStream: Stream, currentUserId: string) {
+    constructor(game: GameFullEvent, readonly stateStream: Stream, currentUserId: string, private callback: (chessPosition: Chess) => void) {
         this.game = game;
         this.currentPlayerColor = game.white.id === currentUserId
             ? 'white'
@@ -29,6 +29,8 @@ export class LichessGame {
         const lastMove = moves[moves.length - 1];
         this.lastMove = lastMove ? [lastMove.substr(0, 2), lastMove.substr(2, 2)] : undefined;
         this.lastUpdateAt = Date.now();
+
+        this.callback(this.chessPosition);
     };
 
     timeOf = (color: Color) => {

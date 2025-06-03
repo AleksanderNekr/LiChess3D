@@ -14,7 +14,7 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { promotionFigure, setPromotionFigure } = usePromotion();
-  const { accessToken, userInfo, login, logout, fetchActiveGames, streamGameState } = useLichess();
+  const { accessToken, userInfo, login, logout, fetchActiveGames, setStreamStarted } = useLichess();
   const [sidebarWidth, setSidebarWidth] = useState(250); // Initial sidebar width
   const [isDragging, setIsDragging] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true); // Sidebar visibility state
@@ -67,15 +67,7 @@ const Layout = ({ children }: LayoutProps) => {
       return;
     }
 
-    streamGameState(id)
-      .then((game) => {
-        console.log('Game state:', game);
-        // Handle the game state as needed
-      })
-      .catch((error) => {
-        console.error('Error streaming game state:', error);
-        alert('Failed to stream game state. Please try again.');
-      });
+    setStreamStarted(id);
   }
 
   return (

@@ -4,20 +4,42 @@ import { Board } from './canvas/Board';
 import { Piece } from './canvas/Piece';
 import { squareToPosition } from './utils';
 import { usePromotion } from '@/helpers/PromotionContext';
+import { useLichess } from '@/helpers/LichessContext';
 
-export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void, lichessGameId?: string }) {
+export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void }) {
   const { setOrbitEnabled } = props;
-  const { promotionFigure } = usePromotion(); // Access promotionFigure from context
-  const [chess] = useState(new Chess()); // Initialize chess.js
+  const { promotionFigure } = usePromotion();
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [validMoves, setValidMoves] = useState<string[]>([]);
-  const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
-  const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null); // Track dragging position
+  const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [chess] = useState(new Chess());
+  const [turn, setTurn] = useState<'w' | 'b'>('w');
+  const [stateUpdated, setStateUpdated] = useState<number>(0);
+  const [piecePositions, setPiecePositions] = useState<any[]>(
+    chess.board()
+      .flatMap((row, rowIndex) =>
+        row.map((piece, colIndex) => {
+          if (!piece) return null;
+          const square = String.fromCharCode(97 + colIndex) + (8 - rowIndex);
+          return {
+            type: piece.type,
+            color: piece.color === 'w' ? 'white' : 'black',
+            position: squareToPosition(square),
+            square,
+            capturable: validMoves.includes(square) && piece.color !== turn, // Mark as capturable if it's in validMoves and not the same color as the current turn
+            inCheck: piece.type === 'k' && chess.inCheck() && piece.color === turn, // Highlight the king if it's in check
+          };
+        })
+      )
+      .filter(Boolean));
+
+  const { streamStarted: gameId, streamGameState } = useLichess();
 
   useEffect(() => {
     setDraggingPiecePosition(null);
   }, [turn]);
+
 
   const makeMove = (from: string, to: string) => {
     const move = chess.move({ from: from, to: to, promotion: mapFigureToCode(promotionFigure) });
@@ -75,22 +97,47 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void,
     }
   };
 
-  const piecePositions = chess.board()
-    .flatMap((row, rowIndex) =>
-      row.map((piece, colIndex) => {
-        if (!piece) return null;
-        const square = String.fromCharCode(97 + colIndex) + (8 - rowIndex);
-        return {
-          type: piece.type,
-          color: piece.color === 'w' ? 'white' : 'black',
-          position: squareToPosition(square),
-          square,
-          capturable: validMoves.includes(square) && piece.color !== turn, // Mark as capturable if it's in validMoves and not the same color as the current turn
-          inCheck: piece.type === 'k' && chess.inCheck() && piece.color === turn, // Highlight the king if it's in check
-        };
+  useEffect(() => {
+    if (!gameId) return;
+
+    console.log('Streaming game state for game ID:', gameId);
+    streamGameState(gameId, (chessPosition: Chess) => {
+      console.log('Game state callback worked');
+      chess.load(chessPosition.fen(), { skipValidation: true });
+      setStateUpdated(Date.now());
+    })
+      .then((game) => {
+        console.log('Game state:', game);
+        chess.load(game.chessPosition.fen(), { skipValidation: true });
+
+        setTurn(game.currentPlayerColor[0] === 'w' ? 'w' : 'b');
+        setSelectedSquare(null); // Reset selected square on new game state
+        setValidMoves([]); // Reset valid moves on new game state
       })
-    )
-    .filter(Boolean);
+      .catch((error) => {
+        console.error('Error streaming game state:', error);
+        alert('Failed to stream game state. Please try again.');
+      });
+  }, [gameId]);
+
+  useEffect(() => {
+    setPiecePositions(chess.board()
+      .flatMap((row, rowIndex) =>
+        row.map((piece, colIndex) => {
+          if (!piece) return null;
+          const square = String.fromCharCode(97 + colIndex) + (8 - rowIndex);
+          return {
+            type: piece.type,
+            color: piece.color === 'w' ? 'white' : 'black',
+            position: squareToPosition(square),
+            square,
+            capturable: validMoves.includes(square) && piece.color !== turn, // Mark as capturable if it's in validMoves and not the same color as the current turn
+            inCheck: piece.type === 'k' && chess.inCheck() && piece.color === turn, // Highlight the king if it's in check
+          };
+        })
+      )
+      .filter(Boolean));
+  }, [stateUpdated]);
 
   return (
     <>
