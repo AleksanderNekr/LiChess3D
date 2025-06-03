@@ -13,12 +13,16 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [validMoves, setValidMoves] = useState<string[]>([]);
   const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
   const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null); // Track dragging position
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     setDraggingPiecePosition(null);
   }, [turn]);
 
   const handleSquareDown = (square: string) => {
+    setIsDragging(true);
+    setOrbitEnabled(false);
+
     if (selectedSquare === square) {
       // Deselect if clicking on the same square
       setSelectedSquare(null);
@@ -47,6 +51,9 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   };
 
   const handleSquareRelease = (square: string) => {
+    setIsDragging(false);
+    setOrbitEnabled(true);
+
     if (selectedSquare && validMoves.includes(square)) {
       // Move the piece
       const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
@@ -65,9 +72,11 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   }
 
   const handlePointerMove = (event: any) => {
-    if (selectedSquare) {
+    if (selectedSquare && isDragging) {
       const point = event.point; // Get the cursor's 3D position
       setDraggingPiecePosition([point.x, point.y + 0.5, point.z]); // Adjust height slightly above the board
+    } else {
+      setDraggingPiecePosition(null);
     }
   };
 
