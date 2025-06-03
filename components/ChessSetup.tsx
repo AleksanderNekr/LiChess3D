@@ -5,7 +5,7 @@ import { Piece } from './canvas/Piece';
 import { squareToPosition } from './utils';
 import { usePromotion } from '@/helpers/PromotionContext';
 
-export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void }) {
+export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void, lichessGameId?: string }) {
   const { setOrbitEnabled } = props;
   const { promotionFigure } = usePromotion(); // Access promotionFigure from context
   const [chess] = useState(new Chess()); // Initialize chess.js
@@ -19,6 +19,16 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
     setDraggingPiecePosition(null);
   }, [turn]);
 
+  const makeMove = (from: string, to: string) => {
+    const move = chess.move({ from: from, to: to, promotion: mapFigureToCode(promotionFigure) });
+    if (move) {
+      setSelectedSquare(null);
+      setValidMoves([]);
+      setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
+      setDraggingPiecePosition(null); // Stop dragging
+    }
+  };
+
   const handleSquareDown = (square: string) => {
     setIsDragging(true);
     setOrbitEnabled(false);
@@ -29,14 +39,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
       setValidMoves([]);
       setDraggingPiecePosition(null);
     } else if (selectedSquare && validMoves.includes(square)) {
-      // Move the piece
-      const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
-      if (move) {
-        setSelectedSquare(null);
-        setValidMoves([]);
-        setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
-        setDraggingPiecePosition(null); // Stop dragging
-      }
+      makeMove(selectedSquare, square)
     } else if (chess.get(square as Square)?.color === turn) {
       // Select a piece
       setSelectedSquare(square);
@@ -54,14 +57,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
     setIsDragging(false);
 
     if (selectedSquare && validMoves.includes(square)) {
-      // Move the piece
-      const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
-      if (move) {
-        setSelectedSquare(null);
-        setValidMoves([]);
-        setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
-        setDraggingPiecePosition(null); // Stop dragging
-      }
+      makeMove(selectedSquare, square);
     } else if (selectedSquare !== square) {
       // Deselect if clicking on an invalid square
       setSelectedSquare(null);
