@@ -52,7 +52,6 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
 
   const handleSquareRelease = (square: string) => {
     setIsDragging(false);
-    setOrbitEnabled(true);
 
     if (selectedSquare && validMoves.includes(square)) {
       // Move the piece
