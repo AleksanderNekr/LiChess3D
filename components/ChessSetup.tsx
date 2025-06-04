@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Chess, Square } from 'chess.js';
 import { Board } from './canvas/Board';
 import { Piece } from './canvas/Piece';
@@ -16,6 +16,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [chess] = useState(new Chess());
   const [turn, setTurn] = useState<'w' | 'b'>('w');
   const [stateUpdated, setStateUpdated] = useState<number>(0);
+  const [storedLastMoveNumber, setStoredLastMoveNumber] = useState<number>(0);
   const [piecePositions, setPiecePositions] = useState<any[]>(
     chess.board()
       .flatMap((row, rowIndex) =>
@@ -97,18 +98,38 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
     }
   };
 
+  // Use ref so last move number is saved in effect
+  const storedLastMoveNumberRef = useRef(storedLastMoveNumber);
+
+  useEffect(() => {
+    storedLastMoveNumberRef.current = storedLastMoveNumber;
+  }, [storedLastMoveNumber]);
+
   useEffect(() => {
     if (!gameId) return;
 
     console.log('Streaming game state for game ID:', gameId);
-    streamGameState(gameId, (chessPosition: Chess) => {
+    streamGameState(gameId, (chessPosition: Chess, lastMove: string, lastMoveAbsNumber: number) => {
       console.log('Game state callback worked');
-      chess.load(chessPosition.fen(), { skipValidation: true });
+      console.log('Last move:', lastMove);
+      console.log('Last move absolute number:', lastMoveAbsNumber);
+      console.log('Stored last move absolute number:', storedLastMoveNumberRef.current);
+      if (lastMoveAbsNumber - storedLastMoveNumberRef.current != 1) {
+        // Reload full state
+        chess.load(chessPosition.fen(), { skipValidation: true });
+        console.log('FULL RELOAD');
+      } else {
+        // Make last move
+        chess.move(lastMove);
+        console.log('Made last move');
+      }
+      setStoredLastMoveNumber(lastMoveAbsNumber);
       setStateUpdated(Date.now());
     })
       .then((game) => {
         console.log('Game state:', game);
         chess.load(game.chessPosition.fen(), { skipValidation: true });
+        console.log('FULL RELOAD');
 
         setTurn(game.currentPlayerColor[0] === 'w' ? 'w' : 'b');
         setSelectedSquare(null); // Reset selected square on new game state

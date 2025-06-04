@@ -18,7 +18,7 @@ interface LichessContextType {
   logout: () => void;
   fetchActiveGames: () => Promise<any[]>;
   makeLichessMove: (gameId: string, move: string) => Promise<void>;
-  streamGameState: (gameId: string, callback: (chessPosition: Chess) => void) => Promise<LichessGame>;
+  streamGameState: (gameId: string, callback: (chessPosition: Chess, lastMove: string, lastMoveAbsNumber: number) => void) => Promise<LichessGame>;
   streamStarted: string | null;
   setStreamStarted: (gameId: string) => void;
 }
@@ -90,7 +90,7 @@ export const LichessProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const streamGameState = (gameId: string, callback: (chessPosition: Chess) => void) => {
+  const streamGameState = (gameId: string, callback: (chessPosition: Chess, lastMove: string, lastMoveAbsNumber: number) => void) => {
     if (!accessToken || !userInfo?.id) throw new Error('User is not authenticated');
 
     return new Promise<LichessGame>(async resolve => {

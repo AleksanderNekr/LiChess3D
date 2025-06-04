@@ -1,17 +1,22 @@
 'use client';
 import { Chess } from 'chess.js';
 import { Stream } from './ndJsonStream';
-import { Color, GameFullEvent as GameFullEvent, GameState, UserInfo } from './types';
+import { Color, GameFullEvent as GameFullEvent, GameState } from './types';
 
 
 export class LichessGame {
     currentPlayerColor: Color;
-    lastMove?: [string, string];
+    lastMove?: string;
+    lastMoveAbsNumber: number = 0;
     game: GameFullEvent;
     chessPosition!: Chess; // The chess position object initialized from the game's initial FEN
     lastUpdateAt!: number; // Timestamp of the last update is initialized in the constructor
 
-    constructor(game: GameFullEvent, readonly stateStream: Stream, currentUserId: string, private callback: (chessPosition: Chess) => void) {
+    constructor(
+        game: GameFullEvent,
+        readonly stateStream: Stream,
+        currentUserId: string,
+        private callback: (chessPosition: Chess, lastMove: string, lastMoveAbsNumber: number) => void) {
         this.game = game;
         this.currentPlayerColor = game.white.id === currentUserId
             ? 'white'
@@ -26,11 +31,11 @@ export class LichessGame {
 
         const moves = this.game.state.moves.split(' ').filter((m: string) => m);
         moves.forEach((uci: string) => this.chessPosition.move(uci));
-        const lastMove = moves[moves.length - 1];
-        this.lastMove = lastMove ? [lastMove.substr(0, 2), lastMove.substr(2, 2)] : undefined;
+        this.lastMove = moves[moves.length - 1];
+        this.lastMoveAbsNumber = moves.length;
         this.lastUpdateAt = Date.now();
 
-        this.callback(this.chessPosition);
+        this.callback(this.chessPosition, this.lastMove, this.lastMoveAbsNumber);
     };
 
     timeOf = (color: Color) => {
