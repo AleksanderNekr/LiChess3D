@@ -1,23 +1,72 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Chess, Square } from 'chess.js';
 import { Board } from './canvas/Board';
 import { Piece } from './canvas/Piece';
 import { squareToPosition } from './utils';
 import { usePromotion } from '@/helpers/PromotionContext';
+import { useLichess } from '@/helpers/LichessContext';
 
 export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void }) {
   const { setOrbitEnabled } = props;
-  const { promotionFigure } = usePromotion(); // Access promotionFigure from context
-  const [chess] = useState(new Chess()); // Initialize chess.js
+  const { promotionFigure } = usePromotion();
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [validMoves, setValidMoves] = useState<string[]>([]);
-  const [turn, setTurn] = useState<'w' | 'b'>('w'); // Track whose turn it is
-  const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null); // Track dragging position
+  const [draggingPiecePosition, setDraggingPiecePosition] = useState<[number, number, number] | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [chess] = useState(new Chess());
+  const [turn, setTurn] = useState<'w' | 'b'>('w');
+  const [stateUpdated, setStateUpdated] = useState<number>(0);
+  const [storedLastMoveNumber, setStoredLastMoveNumber] = useState<number>(0);
+  const [lastMoveMadeByCurrentPlayer, setLastMoveMadeByCurrentPlayer] = useState<boolean>(false);
+
+  // Use ref so last move number is saved in effect
+  const storedLastMoveNumberRef = useRef(storedLastMoveNumber);
+  useEffect(() => {
+    storedLastMoveNumberRef.current = storedLastMoveNumber;
+  }, [storedLastMoveNumber]);
+
+  const lastMoveMadeByCurrentPlayerRef = useRef(lastMoveMadeByCurrentPlayer);
+  useEffect(() => {
+    lastMoveMadeByCurrentPlayerRef.current = lastMoveMadeByCurrentPlayer;
+  }, [lastMoveMadeByCurrentPlayer]);
+
+  const getPiecePositions = () => chess.board()
+    .flatMap((row, rowIndex) =>
+      row.map((piece, colIndex) => {
+        if (!piece) return null;
+        const square = String.fromCharCode(97 + colIndex) + (8 - rowIndex);
+        return {
+          type: piece.type,
+          color: piece.color === 'w' ? 'white' : 'black',
+          position: squareToPosition(square),
+          square,
+          capturable: validMoves.includes(square) && piece.color !== turn, // Mark as capturable if it's in validMoves and not the same color as the current turn
+          inCheck: piece.type === 'k' && chess.inCheck() && piece.color === turn, // Highlight the king if it's in check
+        };
+      })
+    )
+    .filter(Boolean);
+  const [piecePositions, setPiecePositions] = useState<any[]>(getPiecePositions());
+
+  const { streamStarted: gameId, streamGameState, makeLichessMove } = useLichess();
 
   useEffect(() => {
     setDraggingPiecePosition(null);
   }, [turn]);
+
+
+  const makeMove = (from: string, to: string) => {
+    const move = chess.move({ from: from, to: to, promotion: mapFigureToCode(promotionFigure) });
+    if (move && gameId) {
+      setLastMoveMadeByCurrentPlayer(true);
+      setTurn(chess.turn());
+      setStateUpdated(Date.now());
+      setSelectedSquare(null);
+      setValidMoves([]);
+
+      makeLichessMove(gameId, move.lan);
+    }
+  };
 
   const handleSquareDown = (square: string) => {
     setIsDragging(true);
@@ -29,14 +78,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
       setValidMoves([]);
       setDraggingPiecePosition(null);
     } else if (selectedSquare && validMoves.includes(square)) {
-      // Move the piece
-      const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
-      if (move) {
-        setSelectedSquare(null);
-        setValidMoves([]);
-        setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
-        setDraggingPiecePosition(null); // Stop dragging
-      }
+      makeMove(selectedSquare, square)
     } else if (chess.get(square as Square)?.color === turn) {
       // Select a piece
       setSelectedSquare(square);
@@ -52,17 +94,9 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
 
   const handleSquareRelease = (square: string) => {
     setIsDragging(false);
-    setOrbitEnabled(true);
 
     if (selectedSquare && validMoves.includes(square)) {
-      // Move the piece
-      const move = chess.move({ from: selectedSquare, to: square, promotion: mapFigureToCode(promotionFigure) });
-      if (move) {
-        setSelectedSquare(null);
-        setValidMoves([]);
-        setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
-        setDraggingPiecePosition(null); // Stop dragging
-      }
+      makeMove(selectedSquare, square);
     } else if (selectedSquare !== square) {
       // Deselect if clicking on an invalid square
       setSelectedSquare(null);
@@ -80,22 +114,51 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
     }
   };
 
-  const piecePositions = chess.board()
-    .flatMap((row, rowIndex) =>
-      row.map((piece, colIndex) => {
-        if (!piece) return null;
-        const square = String.fromCharCode(97 + colIndex) + (8 - rowIndex);
-        return {
-          type: piece.type,
-          color: piece.color === 'w' ? 'white' : 'black',
-          position: squareToPosition(square),
-          square,
-          capturable: validMoves.includes(square) && piece.color !== turn, // Mark as capturable if it's in validMoves and not the same color as the current turn
-          inCheck: piece.type === 'k' && chess.inCheck() && piece.color === turn, // Highlight the king if it's in check
-        };
-      })
-    )
-    .filter(Boolean);
+  const updateGameStateCallback = (chessPosition: Chess, lastMove: string, lastMoveAbsNumber: number) => {
+    console.log('Game state callback worked');
+    console.log('Last move:', lastMove);
+    console.log('Last move absolute number:', lastMoveAbsNumber);
+    console.log('Stored last move absolute number:', storedLastMoveNumberRef.current);
+    if (lastMoveMadeByCurrentPlayerRef.current) {
+      // Dont update board state
+      console.log('CURRENT PLAYER MADE MOVE');
+
+      setLastMoveMadeByCurrentPlayer(false);
+      setStoredLastMoveNumber(lastMoveAbsNumber);
+      return;
+    }
+
+    if (lastMoveAbsNumber - storedLastMoveNumberRef.current !== 1 || storedLastMoveNumberRef.current === 0) {
+      // Reload full state
+      chess.load(chessPosition.fen(), { skipValidation: true });
+      setTurn(chess.turn());
+      console.log('FULL RELOAD');
+    } else {
+      // Make last move
+      chess.move(lastMove);
+      setTurn(chess.turn())
+      console.log('Made last move');
+    }
+    setStoredLastMoveNumber(lastMoveAbsNumber);
+    setStateUpdated(Date.now());
+    setSelectedSquare(null);
+    setValidMoves([]);
+  };
+
+  useEffect(() => {
+    if (!gameId) return;
+
+    console.log('Streaming game state for game ID:', gameId);
+    streamGameState(gameId, updateGameStateCallback)
+      .catch((error) => {
+        console.error('Error streaming game state:', error);
+        alert('Failed to stream game state. Please try again.');
+      });
+  }, [gameId]);
+
+  useEffect(() => {
+    setPiecePositions(getPiecePositions());
+  }, [stateUpdated]);
 
   return (
     <>

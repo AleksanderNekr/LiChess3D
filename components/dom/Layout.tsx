@@ -14,7 +14,7 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const { promotionFigure, setPromotionFigure } = usePromotion();
-  const { accessToken, userInfo, login, logout, fetchActiveGames } = useLichess();
+  const { accessToken, userInfo, login, logout, fetchActiveGames, setStreamStarted } = useLichess();
   const [sidebarWidth, setSidebarWidth] = useState(250); // Initial sidebar width
   const [isDragging, setIsDragging] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true); // Sidebar visibility state
@@ -60,6 +60,15 @@ const Layout = ({ children }: LayoutProps) => {
       setLoadingGames(false);
     }
   };
+
+  function handleGameStream(id: string) {
+    if (!accessToken) {
+      alert('Please login to Lichess first.');
+      return;
+    }
+
+    setStreamStarted(id);
+  }
 
   return (
     <div
@@ -120,14 +129,6 @@ const Layout = ({ children }: LayoutProps) => {
                   <p>
                     <strong>Username:</strong> {userInfo.username}
                   </p>
-                  {userInfo.title && (
-                    <p>
-                      <strong>Title:</strong> {userInfo.title}
-                    </p>
-                  )}
-                  <p>
-                    <strong>Status:</strong> {userInfo.online ? 'Online' : 'Offline'}
-                  </p>
                 </div>
               )}
               <button
@@ -164,14 +165,12 @@ const Layout = ({ children }: LayoutProps) => {
                 <ul style={{ marginTop: '10px', padding: '0', listStyle: 'none' }}>
                   {activeGames.map((game) => (
                     <li key={game.id} style={{ marginBottom: '10px' }}>
-                      <a
-                        href={`https://lichess.org/${game.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        onClick={() => handleGameStream(game.id)}
                         style={{ color: '#0275d8', textDecoration: 'none' }}
                       >
-                        {game.id} - {game.opponent.username}
-                      </a>
+                        {game.opponent.username}
+                      </button>
                     </li>
                   ))}
                 </ul>
