@@ -1,7 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Play Lichess online in 3D mode
+![image](https://github.com/user-attachments/assets/31a57884-9bce-4d69-8a79-d835a9ed984a)
+
+
+
 
 ## Getting Started
 
+### [Play now...](https://lichess3d.vercel.app)
+
+### ...or run locally
 First, run the development server:
 
 ```bash
