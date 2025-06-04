@@ -17,6 +17,18 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
   const [turn, setTurn] = useState<'w' | 'b'>('w');
   const [stateUpdated, setStateUpdated] = useState<number>(0);
   const [storedLastMoveNumber, setStoredLastMoveNumber] = useState<number>(0);
+  const [lastMoveMadeByCurrentPlayer, setLastMoveMadeByCurrentPlayer] = useState<boolean>(false);
+
+  // Use ref so last move number is saved in effect
+  const storedLastMoveNumberRef = useRef(storedLastMoveNumber);
+  useEffect(() => {
+    storedLastMoveNumberRef.current = storedLastMoveNumber;
+  }, [storedLastMoveNumber]);
+
+  const lastMoveMadeByCurrentPlayerRef = useRef(lastMoveMadeByCurrentPlayer);
+  useEffect(() => {
+    lastMoveMadeByCurrentPlayerRef.current = lastMoveMadeByCurrentPlayer;
+  }, [lastMoveMadeByCurrentPlayer]);
 
   const getPiecePositions = () => chess.board()
     .flatMap((row, rowIndex) =>
@@ -36,7 +48,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
     .filter(Boolean);
   const [piecePositions, setPiecePositions] = useState<any[]>(getPiecePositions());
 
-  const { streamStarted: gameId, streamGameState } = useLichess();
+  const { streamStarted: gameId, streamGameState, makeLichessMove } = useLichess();
 
   useEffect(() => {
     setDraggingPiecePosition(null);
@@ -45,11 +57,14 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
 
   const makeMove = (from: string, to: string) => {
     const move = chess.move({ from: from, to: to, promotion: mapFigureToCode(promotionFigure) });
-    if (move) {
+    if (move && gameId) {
+      setLastMoveMadeByCurrentPlayer(true);
+      setTurn(chess.turn());
+      setStateUpdated(Date.now());
       setSelectedSquare(null);
       setValidMoves([]);
-      setTurn(turn === 'w' ? 'b' : 'w'); // Switch turns
-      setDraggingPiecePosition(null); // Stop dragging
+
+      makeLichessMove(gameId, move.lan);
     }
   };
 
@@ -99,21 +114,24 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
     }
   };
 
-  // Use ref so last move number is saved in effect
-  const storedLastMoveNumberRef = useRef(storedLastMoveNumber);
-
-  useEffect(() => {
-    storedLastMoveNumberRef.current = storedLastMoveNumber;
-  }, [storedLastMoveNumber]);
-
   const updateGameStateCallback = (chessPosition: Chess, lastMove: string, lastMoveAbsNumber: number) => {
     console.log('Game state callback worked');
     console.log('Last move:', lastMove);
     console.log('Last move absolute number:', lastMoveAbsNumber);
     console.log('Stored last move absolute number:', storedLastMoveNumberRef.current);
-    if (lastMoveAbsNumber - storedLastMoveNumberRef.current != 1) {
+    if (lastMoveMadeByCurrentPlayerRef.current) {
+      // Dont update board state
+      console.log('CURRENT PLAYER MADE MOVE');
+
+      setLastMoveMadeByCurrentPlayer(false);
+      setStoredLastMoveNumber(lastMoveAbsNumber);
+      return;
+    }
+
+    if (lastMoveAbsNumber - storedLastMoveNumberRef.current !== 1 || storedLastMoveNumberRef.current === 0) {
       // Reload full state
       chess.load(chessPosition.fen(), { skipValidation: true });
+      setTurn(chess.turn());
       console.log('FULL RELOAD');
     } else {
       // Make last move
