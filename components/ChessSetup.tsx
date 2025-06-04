@@ -121,6 +121,7 @@ export function ChessSetup(props: { setOrbitEnabled: (enabled: boolean) => void 
       } else {
         // Make last move
         chess.move(lastMove);
+        setTurn(chess.turn())
         console.log('Made last move');
       }
       setStoredLastMoveNumber(lastMoveAbsNumber);
