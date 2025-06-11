@@ -71,7 +71,6 @@ export default function Callback() {
         router.push('/');
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, setAccessToken, fetchUserInfo]); // Dependencies are stable context functions and router
 
   return <>

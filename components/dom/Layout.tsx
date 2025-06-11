@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { usePromotion } from '@/helpers/PromotionContext';
 import { useLichess } from '@/helpers/LichessContext';
@@ -25,12 +25,12 @@ const Layout = ({ children }: LayoutProps) => {
     setIsDragging(true);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging) {
       const newWidth = Math.max(50, Math.min(e.clientX, 500)); // Restrict width between 50px and 500px
       setSidebarWidth(newWidth);
     }
-  };
+  }, [isDragging]);
 
   const handleMouseUp = () => {
     setIsDragging(false);
@@ -47,7 +47,7 @@ const Layout = ({ children }: LayoutProps) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  }, [handleMouseMove, isDragging]);
 
   const loadActiveGames = async () => {
     setLoadingGames(true);

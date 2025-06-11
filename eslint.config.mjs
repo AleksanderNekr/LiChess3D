@@ -9,8 +9,6 @@ const eslintConfig = [
   ...compat.config({
     extends: ['next'],
     rules: {
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/no-explicit-any": "off", // This disables the rule
     },
   }),
 ]
